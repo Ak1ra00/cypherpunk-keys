@@ -4,6 +4,12 @@ A searchable Hyprland keybinding reference for [Omarchy](https://omarchy.org/), 
 
 Omarchy is keyboard-driven by design — nearly everything (launching apps, managing windows, switching workspaces) happens through key combinations rather than clicking through menus. This page collects every binding from a real, working Omarchy setup into one searchable, filterable list, so it's easy to find "what key does X" without digging through config files.
 
+## Screenshots
+
+![Overview — header, search, and the Essentials/Windows/Workspaces/Groups/Notifications sections](screenshots/overview.png)
+
+![System & Hardware and Apps & Web sections](screenshots/system-and-apps.png)
+
 ## What's in it
 
 - **230+ keybindings**, pulled directly from `omarchy menu keybindings --print`
