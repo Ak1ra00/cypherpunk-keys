@@ -12,11 +12,15 @@ Omarchy is keyboard-driven by design — nearly everything (launching apps, mana
 
 ### Desktop theme
 
-The keybindings above come from an Omarchy setup running a custom theme called [Oracle](https://github.com/Ak1ra00/oracle) — an elliptic curve plotted on a blueprint grid, in a cyan/violet palette:
+The keybindings above come from an Omarchy setup running a custom theme called [Oracle](https://github.com/Ak1ra00/oracle) — a full Omarchy theme built around the maths behind [vaultless](https://github.com/Ak1ra00/vaultless): a cyan/violet/amber palette on charcoal, gradient window borders with a soft cyan glow, a themed shell (bar, menus, notifications, lock screen), btop, and six 4K backgrounds that are rendered from the actual elliptic-curve and OPRF constructions rather than downloaded.
 
-![Oracle theme wallpaper — an elliptic curve plotted on a blueprint grid](screenshots/theme-wallpaper.png)
+![Oracle theme on the desktop — btop, Neovim and fastfetch in the theme's colours](screenshots/theme-desktop.png)
 
-![Top bar showing the Oracle theme's accent colors](screenshots/theme-bar.png)
+![Oracle wallpaper 01 — the group law on y² = x³ − 3x + 5, plotted on a blueprint grid](screenshots/theme-wallpaper.png)
+
+![Oracle wallpaper 04 — a paper oracle sheet with a real VLT1 QR code](screenshots/theme-paper-oracle.png)
+
+![Top bar showing the Oracle theme's accent colours](screenshots/theme-bar.png)
 
 ## What's in it
 
