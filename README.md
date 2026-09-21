@@ -10,6 +10,14 @@ Omarchy is keyboard-driven by design — nearly everything (launching apps, mana
 
 ![System & Hardware and Apps & Web sections](screenshots/system-and-apps.png)
 
+### Desktop theme
+
+The keybindings above come from an Omarchy setup running a custom theme called [Oracle](https://github.com/Ak1ra00/oracle) — an elliptic curve plotted on a blueprint grid, in a cyan/violet palette:
+
+![Oracle theme wallpaper — an elliptic curve plotted on a blueprint grid](screenshots/theme-wallpaper.png)
+
+![Top bar showing the Oracle theme's accent colors](screenshots/theme-bar.png)
+
 ## What's in it
 
 - **230+ keybindings**, pulled directly from `omarchy menu keybindings --print`
