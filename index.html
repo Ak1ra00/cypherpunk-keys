@@ -1,0 +1,546 @@
+<title>Cypherpunk Keys</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#050508;
+    --bg-deep:#000000;
+    --panel:#0b0714;
+    --panel-line: rgba(0,255,102,0.18);
+    --ink:#c9ffe4;
+    --ink-bright:#eaffef;
+    --ink-dim:#7a8a90;
+    --muted:#33184a;
+    --selection:#3d0a4f;
+    --green:#00ff66;
+    --magenta:#ff00f7;
+    --cyan:#00f7ff;
+    --yellow:#f4ff00;
+    --red:#ff2079;
+    --blue:#00aaff;
+    --font-display:'Chakra Petch', 'Segoe UI', sans-serif;
+    --font-mono:'JetBrains Mono', 'Consolas', monospace;
+    --font-body:'IBM Plex Sans', 'Segoe UI', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 12% -10%, rgba(0,255,102,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(255,0,247,0.08), transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    padding-inline:20px;
+    min-height:100%;
+  }
+
+  a{color:var(--cyan);}
+
+  ::selection{background:var(--selection); color:var(--ink-bright);}
+
+  .wrap{max-width:1080px; margin:0 auto; padding-block:28px 60px;}
+
+  /* ---------- header / boot banner ---------- */
+  .boot{
+    border:1px solid var(--panel-line);
+    background:linear-gradient(180deg, rgba(0,255,102,0.05), rgba(0,0,0,0) 40%), var(--panel);
+    border-radius:6px;
+    padding:20px 22px;
+    position:relative;
+    overflow:hidden;
+  }
+  .boot::before{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px);
+    pointer-events:none;
+  }
+  .boot-row{
+    display:flex; flex-wrap:wrap; gap:24px; align-items:baseline; justify-content:space-between;
+  }
+  .wordmark{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(28px, 5.5vw, 44px);
+    letter-spacing:0.5px;
+    color:var(--ink-bright);
+    text-shadow: 0 0 18px rgba(0,255,102,0.35);
+    margin:0;
+    text-wrap:balance;
+  }
+  .wordmark span{color:var(--green);}
+  .tagline{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    color:var(--ink-dim);
+    margin-top:6px;
+  }
+  .boot-stats{
+    font-family:var(--font-mono);
+    font-size:12px;
+    line-height:1.8;
+    color:var(--ink);
+    white-space:nowrap;
+  }
+  .boot-stats b{color:var(--magenta); font-weight:500;}
+  .boot-stats .ok{color:var(--green);}
+
+  /* ---------- search / filters ---------- */
+  .controls{
+    margin-top:22px;
+    display:flex; flex-wrap:wrap; gap:10px;
+    align-items:center;
+  }
+  .prompt{
+    display:flex; align-items:center; gap:8px;
+    flex:1 1 280px;
+    border:1px solid var(--panel-line);
+    background:var(--bg-deep);
+    border-radius:5px;
+    padding:10px 14px;
+    font-family:var(--font-mono);
+  }
+  .prompt .caret{color:var(--green);}
+  .prompt input{
+    flex:1;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--ink-bright);
+    font-family:var(--font-mono);
+    font-size:14px;
+  }
+  .prompt input::placeholder{color:var(--ink-dim);}
+  .count-pill{
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--ink-dim);
+    white-space:nowrap;
+  }
+
+  .chips{
+    display:flex; flex-wrap:wrap; gap:8px;
+    margin-top:12px;
+  }
+  .chip{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    letter-spacing:0.03em;
+    padding:6px 12px;
+    border-radius:999px;
+    border:1px solid var(--panel-line);
+    background:transparent;
+    color:var(--ink-dim);
+    cursor:pointer;
+    transition:border-color .15s ease, color .15s ease, background .15s ease;
+  }
+  .chip:hover{color:var(--ink-bright); border-color:var(--cyan);}
+  .chip[aria-pressed="true"]{
+    color:var(--bg-deep);
+    background:var(--accent-chip, var(--green));
+    border-color:var(--accent-chip, var(--green));
+    font-weight:500;
+  }
+
+  /* ---------- sections ---------- */
+  .section{margin-top:30px;}
+  .section-head{
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:12px;
+  }
+  .section-dot{width:9px; height:9px; border-radius:2px; flex:none;}
+  .section-title{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:17px;
+    letter-spacing:0.02em;
+    color:var(--ink-bright);
+    margin:0;
+  }
+  .section-sub{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--ink-dim);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
+    gap:8px;
+  }
+
+  .bind{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    border:1px solid var(--panel-line);
+    background:rgba(255,255,255,0.015);
+    border-left:3px solid var(--edge, var(--green));
+    border-radius:4px;
+    padding:10px 12px;
+  }
+  .bind-action{
+    font-size:13px;
+    color:var(--ink);
+  }
+  .keys{
+    display:flex; flex-wrap:wrap; gap:4px;
+    justify-content:flex-end;
+  }
+  .key{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--ink-bright);
+    background:var(--bg-deep);
+    border:1px solid rgba(255,255,255,0.14);
+    border-bottom-width:2px;
+    border-radius:4px;
+    padding:2px 6px;
+    white-space:nowrap;
+  }
+
+  .empty{
+    display:none;
+    font-family:var(--font-mono);
+    color:var(--ink-dim);
+    text-align:center;
+    padding-block:50px;
+    font-size:13px;
+  }
+
+  footer{
+    margin-top:44px;
+    padding-top:16px;
+    border-top:1px solid var(--panel-line);
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--ink-dim);
+    display:flex; flex-wrap:wrap; gap:6px 16px; justify-content:space-between;
+  }
+
+  @media (prefers-reduced-motion: no-preference){
+    .bind{transition:transform .1s ease, border-color .1s ease;}
+    .bind:hover{transform:translateX(2px); border-color:var(--cyan);}
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="boot">
+    <div class="boot-row">
+      <div>
+        <p class="wordmark">cypher<span>punk</span>_keys</p>
+        <p class="tagline">// hyprland keymap reference &mdash; generated from ~/.config/hypr</p>
+      </div>
+      <div class="boot-stats">
+        user   <b>cypher</b><br>
+        theme  <b>Cypherpunk</b> <span class="ok">●</span><br>
+        wm     <b>Hyprland</b><br>
+        mod    <b>SUPER</b>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <label class="prompt">
+      <span class="caret">&gt;</span>
+      <input id="search" type="text" placeholder="grep a key or an action&hellip;" autocomplete="off" spellcheck="false">
+    </label>
+    <span class="count-pill" id="count"></span>
+  </div>
+
+  <div class="chips" id="chips"></div>
+
+  <div id="sections"></div>
+
+  <p class="empty" id="empty">no matches — try a shorter query</p>
+
+  <footer>
+    <span>230+ bindings &middot; SUPER = the key between Ctrl and Alt</span>
+    <span>full live list: <code>omarchy menu keybindings --print</code></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var CATS = [
+    {id:'essentials', label:'Essentials', color:'var(--green)'},
+    {id:'windows', label:'Windows & Layout', color:'var(--cyan)'},
+    {id:'workspaces', label:'Workspaces', color:'var(--magenta)'},
+    {id:'groups', label:'Window Groups', color:'var(--blue)'},
+    {id:'notify', label:'Notifications', color:'var(--yellow)'},
+    {id:'system', label:'System & Hardware', color:'var(--red)'},
+    {id:'apps', label:'Apps & Web', color:'var(--cyan)'},
+    {id:'media', label:'Media Keys', color:'var(--magenta)'}
+  ];
+
+  var DATA = [
+    // essentials
+    {c:'essentials', k:['SUPER','K'], a:'Show keybindings'},
+    {c:'essentials', k:['SUPER','SPACE'], a:'Omarchy menu'},
+    {c:'essentials', k:['SUPER','RETURN'], a:'Terminal'},
+    {c:'essentials', k:['SUPER','SHIFT','RETURN'], a:'Browser'},
+    {c:'essentials', k:['SUPER','SHIFT','F'], a:'File manager'},
+    {c:'essentials', k:['SUPER','ESC'], a:'System menu'},
+    {c:'essentials', k:['SUPER','SHIFT','CTRL','SPACE'], a:'Theme menu'},
+    {c:'essentials', k:['SUPER','F'], a:'Full screen'},
+    {c:'essentials', k:['SUPER','ALT','F'], a:'Full width'},
+    {c:'essentials', k:['SUPER','W'], a:'Close window'},
+    {c:'essentials', k:['CTRL','ALT','DEL'], a:'Close all windows'},
+    {c:'essentials', k:['SUPER','CTRL','L'], a:'Lock system'},
+    {c:'essentials', k:['SUPER','C'], a:'Universal copy'},
+    {c:'essentials', k:['SUPER','V'], a:'Universal paste'},
+    {c:'essentials', k:['SUPER','X'], a:'Universal cut'},
+    {c:'essentials', k:['SUPER','CTRL','V'], a:'Clipboard manager'},
+    {c:'essentials', k:['SUPER','CTRL','E'], a:'Emojis'},
+    {c:'essentials', k:['SUPER','PRINT'], a:'Color picker'},
+    {c:'essentials', k:['PRINT'], a:'Screenshot'},
+    {c:'essentials', k:['ALT','PRINT'], a:'Screen recording'},
+    {c:'essentials', k:['SUPER','ALT','RETURN'], a:'Tmux'},
+    {c:'essentials', k:['SUPER','CTRL','RETURN'], a:'Herdr'},
+    {c:'essentials', k:['SUPER','SHIFT','ALT','B'], a:'Browser (private)'},
+    {c:'essentials', k:['SUPER','SHIFT','B'], a:'Browser'},
+    {c:'essentials', k:['SUPER','SHIFT','ALT','F'], a:'File manager (cwd)'},
+
+    // workspaces
+    {c:'workspaces', k:['SUPER','1..9,0'], a:'Switch to workspace 1&ndash;10'},
+    {c:'workspaces', k:['SUPER','CTRL','TAB'], a:'Former workspace'},
+    {c:'workspaces', k:['SUPER','SHIFT','TAB'], a:'Previous workspace'},
+    {c:'workspaces', k:['SUPER','TAB'], a:'Next workspace'},
+    {c:'workspaces', k:['SUPER','SHIFT','1..9,0'], a:'Move window to workspace 1&ndash;10'},
+    {c:'workspaces', k:['SUPER','SHIFT','ALT','1..9,0'], a:'Move window silently to workspace'},
+    {c:'workspaces', k:['SUPER','SHIFT','ALT','&larr;&rarr;&uarr;&darr;'], a:'Move workspace to monitor'},
+
+    // windows & layout
+    {c:'windows', k:['SUPER','SHIFT','&larr;&rarr;&uarr;&darr;'], a:'Swap window'},
+    {c:'windows', k:['ALT','TAB'], a:'Focus next window'},
+    {c:'windows', k:['CTRL','ALT','TAB'], a:'Focus next monitor'},
+    {c:'windows', k:['SHIFT','ALT','TAB'], a:'Focus previous window'},
+    {c:'windows', k:['SHIFT','CTRL','ALT','TAB'], a:'Focus previous monitor'},
+    {c:'windows', k:['SUPER','&larr;&rarr;&uarr;&darr;'], a:'Focus window (direction)'},
+    {c:'windows', k:['SUPER','LMB','drag'], a:'Move window'},
+    {c:'windows', k:['SUPER','RMB','drag'], a:'Resize window'},
+    {c:'windows', k:['SUPER','MINUS'], a:'Shrink window left'},
+    {c:'windows', k:['SUPER','EQUAL'], a:'Expand window left'},
+    {c:'windows', k:['SUPER','ALT','MINUS/EQUAL'], a:'Resize left, small step'},
+    {c:'windows', k:['SUPER','CTRL','MINUS/EQUAL'], a:'Resize left, large step'},
+    {c:'windows', k:['SUPER','SHIFT','EQUAL'], a:'Expand window down'},
+    {c:'windows', k:['SUPER','SHIFT','MINUS'], a:'Shrink window up'},
+    {c:'windows', k:['SUPER','T'], a:'Toggle floating / tiling'},
+    {c:'windows', k:['SUPER','J'], a:'Toggle split direction'},
+    {c:'windows', k:['SUPER','O'], a:'Pop window out (float & pin)'},
+    {c:'windows', k:['SUPER','ALT','S'], a:'Move window to scratchpad'},
+    {c:'windows', k:['SUPER','S'], a:'Toggle scratchpad'},
+    {c:'windows', k:['SUPER','BACKSPACE'], a:'Toggle window transparency'},
+    {c:'windows', k:['SUPER','ALT','HOME'], a:'Save window width'},
+    {c:'windows', k:['SUPER','HOME'], a:'Restore window width'},
+    {c:'windows', k:['SUPER','L'], a:'Toggle workspace layout'},
+    {c:'windows', k:['SUPER','P'], a:'Pseudo window'},
+    {c:'windows', k:['SUPER','SHIFT','BACKSPACE'], a:'Toggle window gaps'},
+    {c:'windows', k:['SUPER','CTRL','BACKSPACE'], a:'Toggle square aspect ratio'},
+    {c:'windows', k:['SUPER','CTRL','F'], a:'Tiled full screen'},
+
+    // groups
+    {c:'groups', k:['SUPER','G'], a:'Toggle window grouping'},
+    {c:'groups', k:['SUPER','ALT','1..5'], a:'Switch to group window 1&ndash;5'},
+    {c:'groups', k:['SUPER','ALT','&larr;&rarr;&uarr;&darr;'], a:'Move window into group (direction)'},
+    {c:'groups', k:['SUPER','ALT','G'], a:'Move window out of group'},
+    {c:'groups', k:['SUPER','ALT','TAB'], a:'Next window in group'},
+    {c:'groups', k:['SUPER','SHIFT','ALT','TAB'], a:'Previous window in group'},
+    {c:'groups', k:['SUPER','ALT','scroll'], a:'Next / previous in group'},
+    {c:'groups', k:['SUPER','CTRL','&larr;&rarr;'], a:'Move grouped focus'},
+
+    // notifications
+    {c:'notify', k:['SUPER','ALT','COMMA'], a:'Invoke last notification'},
+    {c:'notify', k:['SUPER','COMMA'], a:'Dismiss last notification'},
+    {c:'notify', k:['SUPER','SHIFT','COMMA'], a:'Dismiss all notifications'},
+    {c:'notify', k:['SUPER','CTRL','COMMA'], a:'Toggle silencing notifications'},
+    {c:'notify', k:['SUPER','SHIFT','ALT','COMMA'], a:'Open notification history'},
+
+    // system & hardware
+    {c:'system', k:['SUPER','ESC'], a:'System menu'},
+    {c:'system', k:['SUPER','CTRL','P'], a:'Power menu'},
+    {c:'system', k:['SUPER','CTRL','H'], a:'Hardware menu'},
+    {c:'system', k:['SUPER','CTRL','O'], a:'Toggle menu'},
+    {c:'system', k:['SUPER','ALT','SPACE'], a:'Apps menu'},
+    {c:'system', k:['SUPER','CTRL','1..9'], a:'Bar panel 1&ndash;9'},
+    {c:'system', k:['SUPER','CTRL','A'], a:'Audio'},
+    {c:'system', k:['SUPER','CTRL','B'], a:'Bluetooth'},
+    {c:'system', k:['SUPER','CTRL','W'], a:'Network'},
+    {c:'system', k:['SUPER','CTRL','D'], a:'Display'},
+    {c:'system', k:['SUPER','CTRL','DEL'], a:'Toggle laptop display'},
+    {c:'system', k:['SUPER','CTRL','ALT','DEL'], a:'Toggle laptop display mirroring'},
+    {c:'system', k:['SUPER','CTRL','N'], a:'Toggle nightlight'},
+    {c:'system', k:['SUPER','CTRL','I'], a:'Toggle lock on idle'},
+    {c:'system', k:['SUPER','CTRL','ALT','B'], a:'Show battery remaining'},
+    {c:'system', k:['SUPER','CTRL','ALT','D'], a:'Calendar'},
+    {c:'system', k:['SUPER','CTRL','ALT','R'], a:'Show reminders'},
+    {c:'system', k:['SUPER','CTRL','R'], a:'Set reminder'},
+    {c:'system', k:['SUPER','SHIFT','CTRL','R'], a:'Clear reminders'},
+    {c:'system', k:['SUPER','CTRL','ALT','T'], a:'Show time'},
+    {c:'system', k:['SUPER','CTRL','ALT','W'], a:'Toggle weather'},
+    {c:'system', k:['SUPER','CTRL','ALT','Z'], a:'Reset zoom'},
+    {c:'system', k:['SUPER','CTRL','Z'], a:'Zoom in'},
+    {c:'system', k:['SUPER','CTRL','Q'], a:'Calculator'},
+    {c:'system', k:['SUPER','CTRL','S'], a:'Share'},
+    {c:'system', k:['SUPER','CTRL','T'], a:'Activity'},
+    {c:'system', k:['SUPER','CTRL','X'], a:'Toggle dictation'},
+    {c:'system', k:['F9'], a:'Dictation (push-to-talk)'},
+    {c:'system', k:['SUPER','CTRL','C'], a:'Capture menu'},
+    {c:'system', k:['SUPER','CTRL','PRINT'], a:'Extract text (OCR) from screenshot'},
+    {c:'system', k:['SUPER','CTRL','PERIOD'], a:'Transcode'},
+    {c:'system', k:['SUPER','CTRL','SPACE'], a:'Background switcher'},
+    {c:'system', k:['SUPER','ALT','SLASH'], a:'Monitor scaling down'},
+    {c:'system', k:['SUPER','SLASH'], a:'Monitor scaling up'},
+    {c:'system', k:['SUPER','ALT','[ / ]'], a:'Resize webcam overlay'},
+
+    // apps & web
+    {c:'apps', k:['SUPER','SHIFT','E'], a:'Email'},
+    {c:'apps', k:['SUPER','SHIFT','ALT','E'], a:'New email'},
+    {c:'apps', k:['SUPER','SHIFT','C'], a:'Calendar'},
+    {c:'apps', k:['SUPER','SHIFT','M'], a:'Music'},
+    {c:'apps', k:['SUPER','SHIFT','ALT','M'], a:'Music TUI'},
+    {c:'apps', k:['SUPER','SHIFT','N'], a:'Editor'},
+    {c:'apps', k:['SUPER','SHIFT','O'], a:'Obsidian'},
+    {c:'apps', k:['SUPER','SHIFT','D'], a:'Docker'},
+    {c:'apps', k:['SUPER','SHIFT','G'], a:'Signal'},
+    {c:'apps', k:['SUPER','SHIFT','ALT','G'], a:'WhatsApp'},
+    {c:'apps', k:['SUPER','SHIFT','CTRL','G'], a:'Google Messages'},
+    {c:'apps', k:['SUPER','SHIFT','P'], a:'Google Photos'},
+    {c:'apps', k:['SUPER','SHIFT','S'], a:'Google Maps'},
+    {c:'apps', k:['SUPER','SHIFT','SLASH'], a:'Passwords'},
+    {c:'apps', k:['SUPER','SHIFT','W'], a:'Omawrite'},
+    {c:'apps', k:['SUPER','SHIFT','X'], a:'X'},
+    {c:'apps', k:['SUPER','SHIFT','ALT','X'], a:'X post'},
+    {c:'apps', k:['SUPER','SHIFT','Y'], a:'YouTube'},
+    {c:'apps', k:['SUPER','SHIFT','A'], a:'ChatGPT'},
+    {c:'apps', k:['SUPER','SHIFT','ALT','A'], a:'Grok'},
+    {c:'apps', k:['SUPER','SHIFT','CTRL','A'], a:'Agent'},
+    {c:'apps', k:['SUPER','SHIFT','SPACE'], a:'Toggle top bar'},
+    {c:'apps', k:['SHIFT','ALT','D'], a:'Download video from web app'},
+    {c:'apps', k:['SHIFT','ALT','L'], a:'Copy URL from web app'},
+    {c:'apps', k:['SUPER','ALT','K'], a:'Tmux keybindings'},
+    {c:'apps', k:['SUPER','CTRL','K'], a:'Herdr keybindings'},
+
+    // media keys
+    {c:'media', k:['XF86AudioPlay'], a:'Play / pause'},
+    {c:'media', k:['XF86AudioNext'], a:'Next track'},
+    {c:'media', k:['XF86AudioPrev'], a:'Previous track'},
+    {c:'media', k:['XF86AudioMute'], a:'Mute'},
+    {c:'media', k:['XF86AudioMicMute'], a:'Mute microphone'},
+    {c:'media', k:['XF86AudioRaiseVolume'], a:'Volume up'},
+    {c:'media', k:['XF86AudioLowerVolume'], a:'Volume down'},
+    {c:'media', k:['ALT','XF86AudioRaiseVolume'], a:'Volume up, precise'},
+    {c:'media', k:['ALT','XF86AudioLowerVolume'], a:'Volume down, precise'},
+    {c:'media', k:['SHIFT','XF86AudioMute'], a:'Switch audio output'},
+    {c:'media', k:['SHIFT','XF86AudioPlay'], a:'Switch media source'},
+    {c:'media', k:['XF86MonBrightnessUp'], a:'Brightness up'},
+    {c:'media', k:['XF86MonBrightnessDown'], a:'Brightness down'},
+    {c:'media', k:['ALT','XF86MonBrightnessUp'], a:'Brightness up, precise'},
+    {c:'media', k:['SHIFT','XF86MonBrightnessUp'], a:'Brightness maximum'},
+    {c:'media', k:['XF86KbdBrightnessUp/Down'], a:'Keyboard backlight'},
+    {c:'media', k:['XF86TouchpadToggle'], a:'Toggle touchpad'},
+    {c:'media', k:['XF86Eject'], a:'Eject media'},
+    {c:'media', k:['XF86Calculator'], a:'Calculator'},
+    {c:'media', k:['XF86PowerOff'], a:'Power menu'}
+  ];
+
+  var root = document.getElementById('sections');
+  var chipsEl = document.getElementById('chips');
+  var searchEl = document.getElementById('search');
+  var countEl = document.getElementById('count');
+  var emptyEl = document.getElementById('empty');
+  var activeCats = {};
+
+  CATS.forEach(function(cat){ activeCats[cat.id] = true; });
+
+  function chipBtn(cat){
+    var b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = cat.label;
+    b.style.setProperty('--accent-chip', cat.color);
+    b.setAttribute('aria-pressed', 'true');
+    b.addEventListener('click', function(){
+      activeCats[cat.id] = !activeCats[cat.id];
+      b.setAttribute('aria-pressed', activeCats[cat.id] ? 'true' : 'false');
+      render();
+    });
+    return b;
+  }
+
+  CATS.forEach(function(cat){ chipsEl.appendChild(chipBtn(cat)); });
+
+  function keyEl(label){
+    var s = document.createElement('span');
+    s.className = 'key';
+    s.innerHTML = label;
+    return s;
+  }
+
+  function matches(item, q){
+    if(!q) return true;
+    var hay = (item.a + ' ' + item.k.join(' ')).toLowerCase();
+    return hay.indexOf(q) !== -1;
+  }
+
+  function render(){
+    var q = searchEl.value.trim().toLowerCase();
+    root.innerHTML = '';
+    var total = 0;
+
+    CATS.forEach(function(cat){
+      if(!activeCats[cat.id]) return;
+      var items = DATA.filter(function(d){ return d.c === cat.id && matches(d, q); });
+      if(items.length === 0) return;
+      total += items.length;
+
+      var section = document.createElement('div');
+      section.className = 'section';
+
+      var head = document.createElement('div');
+      head.className = 'section-head';
+      var dot = document.createElement('span');
+      dot.className = 'section-dot';
+      dot.style.background = cat.color;
+      var title = document.createElement('h2');
+      title.className = 'section-title';
+      title.textContent = cat.label;
+      var sub = document.createElement('span');
+      sub.className = 'section-sub';
+      sub.textContent = items.length + (items.length === 1 ? ' bind' : ' binds');
+      head.appendChild(dot);
+      head.appendChild(title);
+      head.appendChild(sub);
+      section.appendChild(head);
+
+      var grid = document.createElement('div');
+      grid.className = 'grid';
+
+      items.forEach(function(item){
+        var row = document.createElement('div');
+        row.className = 'bind';
+        row.style.setProperty('--edge', cat.color);
+
+        var action = document.createElement('span');
+        action.className = 'bind-action';
+        action.textContent = item.a;
+
+        var keys = document.createElement('span');
+        keys.className = 'keys';
+        item.k.forEach(function(k){ keys.appendChild(keyEl(k)); });
+
+        row.appendChild(action);
+        row.appendChild(keys);
+        grid.appendChild(row);
+      });
+
+      section.appendChild(grid);
+      root.appendChild(section);
+    });
+
+    countEl.textContent = total + ' / ' + DATA.length + ' shown';
+    emptyEl.style.display = total === 0 ? 'block' : 'none';
+  }
+
+  searchEl.addEventListener('input', render);
+  render();
+})();
+</script>
